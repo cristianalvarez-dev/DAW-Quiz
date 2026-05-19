@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DAW Quiz</title>
+<script src="preguntas.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
+body{background:#f5f4f0;color:#1a1a1a;font-size:14px}
+.screen{display:none;padding:16px;max-width:700px;margin:0 auto}
+.screen.active{display:block}
+h1{font-size:22px;font-weight:500;margin-bottom:4px}
+h2{font-size:18px;font-weight:500;margin-bottom:12px}
+.sub{font-size:13px;color:#666;margin-bottom:20px}
+.card{background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:12px;padding:16px;margin-bottom:12px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;border:1px solid rgba(0,0,0,0.15);background:#fff;color:#1a1a1a;font-size:14px;cursor:pointer}
+.btn:hover{background:#f0efeb}
+.btn-primary{background:#185FA5;color:#fff;border:none}
+.btn-primary:hover{background:#0C447C}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+.mode-card{background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:12px;padding:16px;cursor:pointer;text-align:center}
+.mode-card:hover{border-color:rgba(0,0,0,0.3)}
+.mode-icon{font-size:28px;margin-bottom:8px}
+.mode-name{font-size:14px;font-weight:500;margin-bottom:4px}
+.mode-desc{font-size:12px;color:#666}
+.board-wrap{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:60px}
+.bar-label{font-size:10px;font-weight:500;text-align:center;height:28px;display:flex;align-items:center;justify-content:center;line-height:1.2}
+.bar-count{font-size:11px;margin-bottom:2px}
+.steps-wrap{display:flex;flex-direction:column-reverse;gap:2px;width:100%}
+.step{height:13px;width:100%;border-radius:3px;background:#e8e8e8;border:1px solid rgba(0,0,0,0.06);position:relative}
+.ruleta-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:16px}
+.q-card{background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:12px;padding:16px;margin-bottom:12px}
+.cat-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;margin-bottom:10px}
+.q-text{font-size:15px;font-weight:500;margin-bottom:14px;line-height:1.5}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{padding:10px 14px;border-radius:8px;border:1px solid rgba(0,0,0,0.1);font-size:14px;cursor:pointer;background:#fff;text-align:left;width:100%}
+.opt:hover:not(:disabled){background:#f5f5f5}
+.opt.correct{background:#E1F5EE;border-color:#1D9E75;color:#085041}
+.opt.wrong{background:#FCEBEB;border-color:#A32D2D;color:#791F1F}
+.opt:disabled{cursor:default}
+.pass-btn{margin-top:8px;width:100%;padding:8px;border-radius:8px;border:1px dashed rgba(0,0,0,0.2);background:transparent;font-size:13px;color:#666;cursor:pointer}
+.pass-btn:hover:not(:disabled){background:#f5f5f5}
+.score-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.score-chip{background:#f0efeb;border-radius:8px;padding:8px 12px;font-size:12px;flex:1;min-width:70px;text-align:center}
+.score-val{font-size:20px;font-weight:500;display:block}
+.turn-banner{background:#f0efeb;border-radius:8px;padding:8px 14px;font-size:13px;margin-bottom:12px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid rgba(0,0,0,0.1);margin-bottom:12px}
+.tab{padding:8px 14px;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;color:#666}
+.tab.active{border-bottom-color:#185FA5;color:#185FA5;font-weight:500}
+.feedback{font-size:13px;text-align:center;min-height:18px;margin-bottom:8px;padding:6px}
+.result-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.result-bar-label{font-size:12px;width:90px;flex-shrink:0}
+.result-bar-track{flex:1;height:10px;background:#e8e8e8;border-radius:5px;overflow:hidden}
+.result-bar-fill{height:100%;border-radius:5px}
+.result-bar-val{font-size:12px;color:#666;width:36px;text-align:right}
+.players-setup{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.player-row{display:flex;gap:8px}
+.player-row input{flex:1;padding:8px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.15);font-size:14px}
+.cat-sel-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.cat-opt{padding:10px 14px;border-radius:8px;border:2px solid transparent;cursor:pointer;font-size:13px;font-weight:500}
+</style>
+</head>
+<body>
+
+<div id="s-home" class="screen active">
+  <h1>DAW Quiz</h1>
+  <p class="sub">Elige un modo de juego para empezar</p>
+  <div class="mode-grid">
+    <div class="mode-card" onclick="goSetup('asignatura')">
+      <div class="mode-icon">📖</div>
+      <div class="mode-name">Modo asignatura</div>
+      <div class="mode-desc">30 preguntas de una materia</div>
+    </div>
+    <div class="mode-card" onclick="goSetup('examen')">
+      <div class="mode-icon">🎓</div>
+      <div class="mode-name">Modo examen</div>
+      <div class="mode-desc">Todas las asignaturas con ruleta</div>
+    </div>
+    <div class="mode-card" onclick="goSetup('desafio')">
+      <div class="mode-icon">⚔️</div>
+      <div class="mode-name">Modo desafío</div>
+      <div class="mode-desc">2 o más jugadores por turnos</div>
+    </div>
+  </div>
+  <div class="card">
+    <span style="color:#666">Acierto +1 &nbsp;·&nbsp; Cada 3 fallos −1 &nbsp;·&nbsp; Pasar sin penalización</span>
+  </div>
+</div>
+
+<div id="s-setup" class="screen">
+  <button class="btn" onclick="showScreen('s-home')" style="margin-bottom:14px">← Volver</button>
+  <h2 id="setup-title"></h2>
+  <div id="setup-body"></div>
+  <button class="btn btn-primary" onclick="startGame()">Empezar</button>
+</div>
+
+<div id="s-game" class="screen">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <span id="game-title" style="font-size:15px;font-weight:500"></span>
+    <button class="btn" onclick="if(confirm('¿Salir de la partida?'))showScreen('s-home')" style="font-size:12px;padding:6px 10px">Salir</button>
+  </div>
+  <div id="turn-banner" class="turn-banner" style="display:none"></div>
+  <div id="tabs-wrap" style="display:none"></div>
+  <div id="board" class="board-wrap"></div>
+  <div id="score-row" class="score-row"></div>
+  <div id="ruleta-section" style="display:none">
+    <div class="ruleta-wrap">
+      <div style="position:relative;display:inline-block">
+        <canvas id="ruleta" width="240" height="240" style="border-radius:50%;display:block"></canvas>
+        <div style="position:absolute;right:-16px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:12px solid transparent;border-bottom:12px solid transparent;border-right:20px solid #1a1a1a"></div>
+      </div>
+      <div id="spin-result" style="font-size:13px;color:#666;min-height:20px;text-align:center"></div>
+      <button class="btn btn-primary" id="spin-btn" onclick="spinRuleta()">🎲 Girar ruleta</button>
+    </div>
+  </div>
+  <div id="q-section" style="display:none">
+    <div class="q-card">
+      <div id="cat-badge" class="cat-badge"></div>
+      <div id="q-text" class="q-text"></div>
+      <div id="opts" class="opts"></div>
+      <button class="pass-btn" id="pass-btn" onclick="passQ()">Pasar (sin penalización)</button>
+    </div>
+    <div id="feedback" class="feedback"></div>
+    <button class="btn btn-primary" id="next-btn" onclick="nextTurn()" style="display:none;width:100%;justify-content:center">Siguiente →</button>
+  </div>
+</div>
+
+<div id="s-result" class="screen">
+  <h2 id="result-title">Resultado</h2>
+  <div id="result-body"></div>
+  <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap">
+    <button class="btn btn-primary" onclick="showScreen('s-home')">Inicio</button>
+    <button class="btn" onclick="goSetup(lastMode)">Repetir modo</button>
+  </div>
+</div>
+
+<script>
+var CATS=[
+  {id:"lm",  name:"Lenguaje de Marcas",   short:"LM",  light:"#E6F1FB",dark:"#0C447C",mid:"#185FA5"},
+  {id:"mpo", name:"Mód. Optativo",         short:"MPO", light:"#EEEDFE",dark:"#3C3489",mid:"#534AB7"},
+  {id:"prog",name:"Programación",          short:"PRG", light:"#EAF3DE",dark:"#27500A",mid:"#3B6D11"},
+  {id:"bd",  name:"Bases de Datos",        short:"BD",  light:"#E1F5EE",dark:"#085041",mid:"#1D9E75"},
+  {id:"ed",  name:"Entornos Dev.",         short:"ED",  light:"#FAEEDA",dark:"#633806",mid:"#854F0B"},
+  {id:"emp", name:"Empleabilidad",         short:"EMP", light:"#FEF3D9",dark:"#412402",mid:"#BA7517"},
+  {id:"si",  name:"Sist. Informáticos",   short:"SI",  light:"#FCEBEB",dark:"#791F1F",mid:"#A32D2D"}
+];
+
+var STEPS=30;
+var gs=null;
+var lastMode="examen";
+var ruletaAngle=0;
+var ruletaSpinning=false;
+var SECTOR_LABELS=CATS.map(function(c){return c.short;}).concat(["Aleatorio"]);
+var SECTOR_COLORS=CATS.map(function(c){return c.mid;}).concat(["#888780"]);
+var NSECTORS=8;
+
+function shuffle(arr){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));
+    var t=a[i];a[i]=a[j];a[j]=t;
+  }
+  return a;
+}
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(function(s){s.style.display="none";});
+  var el=document.getElementById(id);
+  if(el)el.style.display="block";
+}
+
+function goSetup(mode){
+  lastMode=mode;
+  document.getElementById("setup-title").textContent=
+    mode==="asignatura"?"Modo asignatura — Elige asignatura":
+    mode==="examen"?"Modo examen — Todas las asignaturas":"Modo desafío — Configura jugadores";
+  var body=document.getElementById("setup-body");
+  if(mode==="asignatura"){
+    var html='<div class="cat-sel-grid">';
+    CATS.forEach(function(c,i){
+      html+='<div class="cat-opt" id="copt-'+i+'" onclick="selCat('+i+')" style="background:'+c.light+';border-color:'+c.mid+';color:'+c.dark+'">'+c.name+'</div>';
+    });
+    html+='</div>';
+    body.innerHTML=html;
+    window._selCat=0;
+    document.getElementById("copt-0").style.outline="3px solid "+CATS[0].mid;
+  } else if(mode==="examen"){
+    body.innerHTML='<p style="color:#666;font-size:13px;margin-bottom:20px">La ruleta elige la asignatura en cada turno. Completa 30 preguntas en cada barra para terminar.</p>';
+  } else {
+    window._playerCount=2;
+    body.innerHTML='<p style="color:#666;font-size:13px;margin-bottom:10px">Nombre de los jugadores (2–4):</p>'+
+      '<div class="players-setup" id="plist">'+
+        '<div class="player-row"><input id="pn0" value="Jugador 1"><button class="btn" onclick="rmPlayer()" style="padding:6px 10px">−</button></div>'+
+        '<div class="player-row"><input id="pn1" value="Jugador 2"><button class="btn" onclick="rmPlayer()" style="padding:6px 10px">−</button></div>'+
+      '</div>'+
+      '<button class="btn" onclick="addPlayer()" style="margin-bottom:20px;font-size:13px">+ Añadir jugador</button><br>';
+  }
+  showScreen("s-setup");
+}
+
+function selCat(i){
+  CATS.forEach(function(_,j){var el=document.getElementById("copt-"+j);if(el)el.style.outline="";});
+  window._selCat=i;
+  var el=document.getElementById("copt-"+i);
+  if(el)el.style.outline="3px solid "+CATS[i].mid;
+}
+
+function addPlayer(){
+  if(window._playerCount>=4)return;
+  var list=document.getElementById("plist");
+  var row=document.createElement("div");row.className="player-row";
+  var n=window._playerCount;
+  row.innerHTML='<input id="pn'+n+'" value="Jugador '+(n+1)+'"><button class="btn" onclick="rmPlayer()" style="padding:6px 10px">−</button>';
+  list.appendChild(row);window._playerCount++;
+}
+function rmPlayer(){
+  if(window._playerCount<=2)return;
+  var list=document.getElementById("plist");
+  list.removeChild(list.lastElementChild);window._playerCount--;
+}
+
+function mkBars(){return CATS.map(function(){return {steps:new Array(STEPS).fill(null),correct:0,wrong:0,passed:0};});}
+function mkPools(){var p={};CATS.forEach(function(c){p[c.id]=shuffle(QDB[c.id].slice());});return p;}
+function mkIdxs(){var p={};CATS.forEach(function(c){p[c.id]=0;});return p;}
+
+function startGame(){
+  var mode=lastMode;
+  if(mode==="asignatura"){
+    var ci=window._selCat||0;
+    gs={mode:"asignatura",catIdx:ci,steps:new Array(STEPS).fill(null),correct:0,wrong:0,passed:0,
+      pool:shuffle(QDB[CATS[ci].id].slice()),qIdx:0,curCatIdx:ci};
+  } else if(mode==="examen"){
+    gs={mode:"examen",bars:mkBars(),correct:0,wrong:0,passed:0,pools:mkPools(),idxs:mkIdxs(),curCatIdx:null};
+  } else {
+    var names=[];
+    for(var i=0;i<(window._playerCount||2);i++){
+      var el=document.getElementById("pn"+i);names.push(el?el.value.trim()||"Jugador "+(i+1):"Jugador "+(i+1));
+    }
+    gs={mode:"desafio",cur:0,curCatIdx:null,
+      players:names.map(function(n){return {name:n,bars:mkBars(),correct:0,wrong:0,passed:0,pools:mkPools(),idxs:mkIdxs()};})};
+  }
+  renderGame();
+  showScreen("s-game");
+}
+
+function renderGame(){
+  var g=gs;
+  document.getElementById("q-section").style.display="none";
+  document.getElementById("ruleta-section").style.display="none";
+  document.getElementById("turn-banner").style.display="none";
+  document.getElementById("tabs-wrap").style.display="none";
+  document.getElementById("spin-result").textContent="";
+
+  if(g.mode==="asignatura"){
+    document.getElementById("game-title").textContent="Modo asignatura — "+CATS[g.catIdx].name;
+    document.getElementById("board").innerHTML=renderBar(g.catIdx,g.steps);
+    document.getElementById("score-row").innerHTML=renderScore(g.correct,g.wrong,g.passed);
+    document.getElementById("q-section").style.display="block";
+    loadQ(g.catIdx);
+  } else if(g.mode==="examen"){
+    document.getElementById("game-title").textContent="Modo examen";
+    document.getElementById("board").innerHTML=g.bars.map(function(b,i){return renderBar(i,b.steps);}).join("");
+    document.getElementById("score-row").innerHTML=renderScore(g.correct,g.wrong,g.passed);
+    document.getElementById("ruleta-section").style.display="block";
+    document.getElementById("spin-btn").disabled=false;
+    drawRuleta(ruletaAngle);
+  } else {
+    var cp=g.players[g.cur];
+    document.getElementById("game-title").textContent="Modo desafío";
+    document.getElementById("turn-banner").style.display="block";
+    document.getElementById("turn-banner").textContent="Turno de: "+cp.name;
+    renderDesafioBoard(g.cur);
+    document.getElementById("score-row").innerHTML=renderScore(cp.correct,cp.wrong,cp.passed);
+    document.getElementById("ruleta-section").style.display="block";
+    document.getElementById("spin-btn").disabled=false;
+    drawRuleta(ruletaAngle);
+  }
+}
+
+function renderDesafioBoard(activeIdx){
+  var g=gs;
+  var tabsWrap=document.getElementById("tabs-wrap");
+  tabsWrap.style.display="block";
+  var tabs='<div class="tabs">';
+  g.players.forEach(function(p,i){tabs+='<div class="tab'+(i===activeIdx?" active":"")+'" onclick="switchTab('+i+')">'+p.name+'</div>';});
+  tabs+='</div>';
+  tabsWrap.innerHTML=tabs;
+  var p=g.players[activeIdx];
+  document.getElementById("board").innerHTML=p.bars.map(function(b,i){return renderBar(i,b.steps);}).join("");
+}
+
+function switchTab(i){
+  document.querySelectorAll(".tab").forEach(function(t,j){t.classList.toggle("active",j===i);});
+  var p=gs.players[i];
+  document.getElementById("board").innerHTML=p.bars.map(function(b,j){return renderBar(j,b.steps);}).join("");
+}
+
+function renderBar(catIdx,steps){
+  var cat=CATS[catIdx];
+  var done=steps.filter(function(s){return s!==null;}).length;
+  var stepsHtml=steps.slice().reverse().map(function(s,ri){
+    var num=STEPS-ri;
+    var bg="#e8e8e8";
+    if(s==="correct")bg=cat.light;
+    else if(s==="wrong")bg=cat.dark;
+    else if(s==="pass")bg="#d0d0d0";
+    var marker=(num===STEPS||num%10===0||num===1)?'<span style="position:absolute;left:50%;transform:translateX(-50%);font-size:8px;color:rgba(0,0,0,0.35);bottom:1px">'+num+"</span>":"";
+    return '<div class="step" style="background:'+bg+'">'+marker+'</div>';
+  }).join("");
+  return '<div class="bar-col">'+
+    '<div class="bar-label" style="color:'+cat.mid+'">'+cat.short+'</div>'+
+    '<div class="bar-count" style="color:'+cat.mid+'">'+done+'/'+STEPS+'</div>'+
+    '<div class="steps-wrap">'+stepsHtml+'</div>'+
+    '</div>';
+}
+
+function renderScore(c,w,p){
+  var pen=Math.floor(w/3);var score=Math.max(0,c-pen);
+  return '<div class="score-chip"><span style="font-size:11px;color:#666">Aciertos</span><span class="score-val" style="color:#1D9E75">'+c+'</span></div>'+
+    '<div class="score-chip"><span style="font-size:11px;color:#666">Fallos</span><span class="score-val" style="color:#A32D2D">'+w+'</span></div>'+
+    '<div class="score-chip"><span style="font-size:11px;color:#666">Pasadas</span><span class="score-val" style="color:#854F0B">'+p+'</span></div>'+
+    '<div class="score-chip"><span style="font-size:11px;color:#666">Nota</span><span class="score-val">'+score+'</span></div>';
+}
+
+function drawRuleta(angle){
+  var c=document.getElementById("ruleta");
+  if(!c)return;
+  var ctx=c.getContext("2d");
+  var w=c.width,cx=w/2,cy=w/2,r=cx-4;
+  ctx.clearRect(0,0,w,w);
+  var slice=2*Math.PI/NSECTORS;
+  for(var i=0;i<NSECTORS;i++){
+    var s=angle+i*slice,e=s+slice;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s,e);ctx.closePath();
+    ctx.fillStyle=SECTOR_COLORS[i];ctx.fill();
+    ctx.strokeStyle="#fff";ctx.lineWidth=2;ctx.stroke();
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(s+slice/2);
+    ctx.textAlign="right";ctx.fillStyle="#fff";ctx.font="bold 11px system-ui,sans-serif";
+    ctx.fillText(SECTOR_LABELS[i],r-8,4);ctx.restore();
+  }
+  ctx.beginPath();ctx.arc(cx,cy,14,0,2*Math.PI);
+  ctx.fillStyle="#fff";ctx.fill();
+  ctx.strokeStyle="rgba(0,0,0,0.15)";ctx.lineWidth=1;ctx.stroke();
+}
+
+function spinRuleta(){
+  if(ruletaSpinning)return;
+  ruletaSpinning=true;
+  document.getElementById("spin-btn").disabled=true;
+  document.getElementById("spin-result").textContent="Girando...";
+  var target=Math.floor(Math.random()*NSECTORS);
+  var slice=2*Math.PI/NSECTORS;
+  var fullSpins=5+Math.random()*3;
+  var targetAngle=-(target*slice)-slice/2+Math.PI;
+  var cur=ruletaAngle%(2*Math.PI);
+  var diff=(targetAngle-cur+4*Math.PI)%(2*Math.PI);
+  var endAngle=ruletaAngle+fullSpins*2*Math.PI+diff;
+  var startAngle=ruletaAngle;
+  var dur=3000;var t0=performance.now();
+  function frame(now){
+    var t=Math.min((now-t0)/dur,1);
+    var ease=1-Math.pow(1-t,3);
+    ruletaAngle=startAngle+(endAngle-startAngle)*ease;
+    drawRuleta(ruletaAngle);
+    if(t<1){requestAnimationFrame(frame);}
+    else{
+      ruletaAngle=endAngle;ruletaSpinning=false;
+      var catIdx=target===7?Math.floor(Math.random()*7):target;
+      var label=target===7?"Aleatorio → "+CATS[catIdx].name:CATS[catIdx].name;
+      document.getElementById("spin-result").textContent="→ "+label;
+      setTimeout(function(){showQSection(catIdx);},700);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+function showQSection(catIdx){
+  gs.curCatIdx=catIdx;
+  document.getElementById("ruleta-section").style.display="none";
+  document.getElementById("q-section").style.display="block";
+  loadQ(catIdx);
+}
+
+function getPool(catId){
+  if(gs.mode==="asignatura")return gs.pool;
+  if(gs.mode==="examen")return gs.pools[catId];
+  return gs.players[gs.cur].pools[catId];
+}
+function getIdx(catId){
+  if(gs.mode==="asignatura")return gs.qIdx;
+  if(gs.mode==="examen")return gs.idxs[catId];
+  return gs.players[gs.cur].idxs[catId];
+}
+function bumpIdx(catId){
+  if(gs.mode==="asignatura"){
+    gs.qIdx++;
+    if(gs.qIdx>=gs.pool.length){gs.pool=shuffle(QDB[CATS[gs.catIdx].id].slice());gs.qIdx=0;}
+  } else if(gs.mode==="examen"){
+    gs.idxs[catId]++;
+    if(gs.idxs[catId]>=gs.pools[catId].length){gs.pools[catId]=shuffle(QDB[catId].slice());gs.idxs[catId]=0;}
+  } else {
+    var p=gs.players[gs.cur];p.idxs[catId]++;
+    if(p.idxs[catId]>=p.pools[catId].length){p.pools[catId]=shuffle(QDB[catId].slice());p.idxs[catId]=0;}
+  }
+}
+
+function loadQ(catIdx){
+  var cat=CATS[catIdx];gs.curCatIdx=catIdx;
+  var pool=getPool(cat.id);var idx=getIdx(cat.id);var q=pool[idx];
+  var badge=document.getElementById("cat-badge");
+  badge.textContent=cat.name;badge.style.background=cat.light;badge.style.color=cat.dark;
+  document.getElementById("q-text").textContent=q.q;
+  var labels=["A","B","C","D"];
+  document.getElementById("opts").innerHTML=q.opts.map(function(o,i){
+    return '<button class="opt" onclick="answerQ('+i+')">'+labels[i]+") "+o+"</button>";
+  }).join("");
+  document.getElementById("pass-btn").style.display="block";
+  document.getElementById("pass-btn").disabled=false;
+  document.getElementById("feedback").textContent="";
+  document.getElementById("feedback").style.color="#666";
+  document.getElementById("next-btn").style.display="none";
+}
+
+function answerQ(chosen){
+  var catIdx=gs.curCatIdx;var cat=CATS[catIdx];
+  var pool=getPool(cat.id);var idx=getIdx(cat.id);var q=pool[idx];
+  var correct=chosen===q.a;
+  document.querySelectorAll(".opt").forEach(function(el,i){
+    el.disabled=true;
+    if(i===q.a)el.classList.add("correct");
+    else if(i===chosen&&!correct)el.classList.add("wrong");
+  });
+  document.getElementById("pass-btn").style.display="none";
+  bumpIdx(cat.id);
+  registerResult(catIdx,correct?"correct":"wrong");
+  document.getElementById("feedback").textContent=correct?"¡Correcto!":"Incorrecto. Era: "+q.opts[q.a];
+  document.getElementById("feedback").style.color=correct?"#085041":"#791F1F";
+  document.getElementById("next-btn").style.display="block";
+  refreshBoard();
+  if(checkDone())setTimeout(showResult,800);
+}
+
+function passQ(){
+  var catIdx=gs.curCatIdx;var cat=CATS[catIdx];
+  bumpIdx(cat.id);
+  document.querySelectorAll(".opt").forEach(function(el){el.disabled=true;});
+  document.getElementById("pass-btn").disabled=true;
+  registerResult(catIdx,"pass");
+  document.getElementById("feedback").textContent="Pregunta pasada. Sin penalización.";
+  document.getElementById("feedback").style.color="#666";
+  document.getElementById("next-btn").style.display="block";
+  refreshBoard();
+  if(checkDone())setTimeout(showResult,800);
+}
+
+function registerResult(catIdx,result){
+  var g=gs;
+  if(g.mode==="asignatura"){
+    var i=g.steps.indexOf(null);if(i!==-1)g.steps[i]=result;
+    if(result==="correct")g.correct++;else if(result==="wrong")g.wrong++;else g.passed++;
+  } else if(g.mode==="examen"){
+    var bar=g.bars[catIdx];var i2=bar.steps.indexOf(null);if(i2!==-1)bar.steps[i2]=result;
+    if(result==="correct"){bar.correct++;g.correct++;}else if(result==="wrong"){bar.wrong++;g.wrong++;}else{bar.passed++;g.passed++;}
+  } else {
+    var p=g.players[g.cur];var bar2=p.bars[catIdx];var i3=bar2.steps.indexOf(null);if(i3!==-1)bar2.steps[i3]=result;
+    if(result==="correct"){bar2.correct++;p.correct++;}else if(result==="wrong"){bar2.wrong++;p.wrong++;}else{bar2.passed++;p.passed++;}
+  }
+}
+
+function refreshBoard(){
+  var g=gs;
+  if(g.mode==="asignatura"){
+    document.getElementById("board").innerHTML=renderBar(g.catIdx,g.steps);
+    document.getElementById("score-row").innerHTML=renderScore(g.correct,g.wrong,g.passed);
+  } else if(g.mode==="examen"){
+    document.getElementById("board").innerHTML=g.bars.map(function(b,i){return renderBar(i,b.steps);}).join("");
+    document.getElementById("score-row").innerHTML=renderScore(g.correct,g.wrong,g.passed);
+  } else {
+    var cp=g.players[g.cur];
+    renderDesafioBoard(g.cur);
+    document.getElementById("score-row").innerHTML=renderScore(cp.correct,cp.wrong,cp.passed);
+  }
+}
+
+function checkDone(){
+  var g=gs;
+  if(g.mode==="asignatura")return g.steps.every(function(s){return s!==null;});
+  if(g.mode==="examen")return g.bars.every(function(b){return b.steps.every(function(s){return s!==null;});});
+  return gs.players[gs.cur].bars.every(function(b){return b.steps.every(function(s){return s!==null;});});
+}
+
+function nextTurn(){
+  document.getElementById("q-section").style.display="none";
+  document.getElementById("next-btn").style.display="none";
+  document.getElementById("feedback").textContent="";
+  var g=gs;
+  if(g.mode==="asignatura"){
+    if(checkDone()){showResult();return;}
+    document.getElementById("q-section").style.display="block";
+    loadQ(g.catIdx);
+  } else if(g.mode==="examen"){
+    if(checkDone()){showResult();return;}
+    document.getElementById("spin-result").textContent="";
+    document.getElementById("ruleta-section").style.display="block";
+    document.getElementById("spin-btn").disabled=false;
+    drawRuleta(ruletaAngle);
+  } else {
+    if(checkDone()){showResult();return;}
+    g.cur=(g.cur+1)%g.players.length;
+    var cp=g.players[g.cur];
+    document.getElementById("turn-banner").textContent="Turno de: "+cp.name;
+    renderDesafioBoard(g.cur);
+    document.getElementById("score-row").innerHTML=renderScore(cp.correct,cp.wrong,cp.passed);
+    document.getElementById("spin-result").textContent="";
+    document.getElementById("ruleta-section").style.display="block";
+    document.getElementById("spin-btn").disabled=false;
+    drawRuleta(ruletaAngle);
+  }
+}
+
+function calcNote(c,w){return Math.max(0,c-Math.floor(w/3));}
+
+function showResult(){
+  var g=gs;var html="";
+  if(g.mode==="asignatura"){
+    var cat=CATS[g.catIdx];var note=calcNote(g.correct,g.wrong);
+    var pct=Math.round(note/STEPS*100)/10;
+    document.getElementById("result-title").textContent="Resultado — "+cat.name;
+    html='<div class="card" style="text-align:center;margin-bottom:16px">'+
+      '<div style="font-size:36px;font-weight:500;color:'+(note>=20?"#1D9E75":note>=15?"#854F0B":"#A32D2D")+'">'+note+'/'+STEPS+'</div>'+
+      '<div style="font-size:13px;color:#666;margin-top:4px">Nota aproximada: '+pct+'/10</div></div>'+
+      renderResultBars([{label:"Aciertos",val:g.correct,color:"#1D9E75"},{label:"Fallos",val:g.wrong,color:"#A32D2D"},{label:"Pasadas",val:g.passed,color:"#854F0B"}],STEPS);
+  } else if(g.mode==="examen"){
+    document.getElementById("result-title").textContent="Resultado — Modo examen";
+    var totalC=0,totalW=0;
+    g.bars.forEach(function(b){totalC+=b.correct;totalW+=b.wrong;});
+    var note2=calcNote(totalC,totalW);var max=STEPS*7;
+    html='<div class="card" style="text-align:center;margin-bottom:16px">'+
+      '<div style="font-size:32px;font-weight:500;color:#185FA5">'+note2+'/'+max+'</div>'+
+      '<div style="font-size:13px;color:#666;margin-top:4px">Penalización total: −'+Math.floor(totalW/3)+'</div></div>'+
+      '<div>';
+    g.bars.forEach(function(b,i){
+      var cat=CATS[i];var n=calcNote(b.correct,b.wrong);
+      html+='<div class="result-bar-row">'+
+        '<div class="result-bar-label" style="color:'+cat.mid+'">'+cat.short+'</div>'+
+        '<div class="result-bar-track"><div class="result-bar-fill" style="width:'+Math.round(b.correct/STEPS*100)+'%;background:'+cat.mid+'"></div></div>'+
+        '<div class="result-bar-val">'+n+'/'+STEPS+'</div></div>';
+    });
+    html+='</div>';
+  } else {
+    document.getElementById("result-title").textContent="Resultado — Modo desafío";
+    var sorted=g.players.slice().sort(function(a,b){return calcNote(b.correct,b.wrong)-calcNote(a.correct,a.wrong);});
+    var medals=["🥇","🥈","🥉"];
+    html='<div style="display:flex;flex-direction:column;gap:12px">';
+    sorted.forEach(function(p,rank){
+      var note3=calcNote(p.correct,p.wrong);
+      html+='<div class="card" style="border-left:3px solid '+(rank===0?"#BA7517":"rgba(0,0,0,0.1)")+';padding-left:14px">'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
+        '<div style="font-weight:500">'+(medals[rank]||"")+" "+p.name+'</div>'+
+        '<div style="font-size:22px;font-weight:500;color:#185FA5">'+note3+'</div></div>'+
+        '<div style="font-size:12px;color:#666">Aciertos: '+p.correct+' · Fallos: '+p.wrong+' · Pasadas: '+p.passed+'</div></div>';
+    });
+    html+='</div>';
+  }
+  document.getElementById("result-body").innerHTML=html;
+  showScreen("s-result");
+}
+
+function renderResultBars(items,total){
+  return '<div>'+items.map(function(it){
+    return '<div class="result-bar-row">'+
+      '<div class="result-bar-label" style="color:'+it.color+'">'+it.label+'</div>'+
+      '<div class="result-bar-track"><div class="result-bar-fill" style="width:'+Math.min(100,Math.round(it.val/total*100))+'%;background:'+it.color+'"></div></div>'+
+      '<div class="result-bar-val">'+it.val+'</div></div>';
+  }).join("")+'</div>';
+}
+
+showScreen("s-home");
+drawRuleta(0);
+</script>
+</body>
+</html>
