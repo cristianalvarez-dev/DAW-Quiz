@@ -4,7 +4,7 @@
 
 var QDB = {
 
-  lm [
+  lm: [
     {q:"¿Qué propiedad define el color de fondo?",a:2,opts:["bg","background-text","background-color","color-background"]},
     {q:"¿Cuál es la forma correcta de CSS interno?",a:0,opts:["<style> h1{color:red;} </style>","<design> h1{color:red;} </design>","<script> h1{color:red;} </script>","<css> h1{color:red;} </css>"]},
     {q:"¿Qué hace la propiedad background-color?",a:0,opts:["Cambia el color del fondo de un elemento","Oculta el contenido del elemento","Ajusta el tamaño del borde","Modifica el color del texto"]},
@@ -193,7 +193,7 @@ var QDB = {
     {q:"¿Qué propiedad CSS define el ancho total incluyendo contenido, relleno y borde?",a:3,opts:["padding","width","margin","box-sizing: border-box"]}
   ],
 
-  mpo [
+  mpo: [
     {q:"¿Cuándo libera memoria el Garbage Collector de Java?",a:3,opts:["Al crear variable primitiva","Al finalizar el programa","Con delete explícito","Cuando no hay referencias activas"]},
     {q:"¿Qué representa una clase en POO de Java?",a:1,opts:["Instrucciones secuenciales","Molde que define propiedades y comportamientos de objetos","Colección de métodos estáticos","Estructura para arrays"]},
     {q:"¿Cuál es el beneficio fundamental de la herencia en POO?",a:1,opts:["Eliminar constructores en clases derivadas","Compartir y reutilizar código entre clases jerárquicamente","Crear objetos sin relaciones con otras clases","Herencia múltiple simultánea"]},
@@ -253,7 +253,7 @@ var QDB = {
     {q:"¿Cuál es la característica fundamental del bucle while?",a:3,opts:["Ejecuta el bloque mínimo una vez","Itera sin examinar condición","Detiene en condición falsa","Continúa iterando mientras la condición sea verdadera"]}
   ],
 
-  prog [
+  prog: [
     {q:"¿Qué clase organiza nodos verticalmente en JavaFX?",a:0,opts:["VBox","HBox","GridPane","FlowPane"]},
     {q:"¿Cuál es la diferencia principal entre array y ArrayList?",a:1,opts:["ArrayList no admite null","Array tiene tamaño fijo; ArrayList es dinámico","Array es más lento","ArrayList solo admite primitivos"]},
     {q:"¿Cómo se obtiene el elemento en posición 3 de un ArrayList?",a:2,opts:["lista.item(3)","lista.element(3)","lista.get(3)","lista.fetch(3)"]},
@@ -331,7 +331,7 @@ var QDB = {
     {q:"¿Cuál es la sintaxis correcta para declarar array de 5 enteros?",a:0,opts:["int[] numeros = new int[5]","int numeros = new int[5]","int[5] numeros","array<int> numeros(5)"]}
   ],
 
-  bd [
+  bd: [
     {q:"¿Qué extrae SELECT nombre FROM clientes WHERE saldo > 1000?",a:0,opts:["Nombres de clientes con saldo > 1000","Actualiza el saldo de esos clientes","Nombre y saldo de todos sin filtros","Elimina clientes con saldo > 1000"]},
     {q:"¿Qué violación ocurre cuando FK referencia valor inexistente?",a:0,opts:["Violación de integridad referencial","Violación de integridad de entidad","Violación de restricción CHECK","Violación de unicidad"]},
     {q:"¿Cómo se representa una relación N:M en el modelo relacional?",a:0,opts:["Tabla intermedia con FKs de ambas tablas","Columna adicional en la tabla del lado N","Claves primarias compuestas","Duplicando filas"]},
@@ -417,7 +417,7 @@ var QDB = {
     {q:"¿Qué exige la Primera Forma Normal (1FN)?",a:0,opts:["No atributos multivaluados y todos los valores atómicos","Clave primaria sin dependencias parciales","Sin dependencias transitivas","Atributos dependientes funcionalmente de la clave"]}
   ],
 
-  ed [
+  ed: [
     {q:"¿Qué sucede durante una Daily Scrum?",a:3,opts:["Se define el backlog completo","Se revisa exhaustivamente el código","Se presenta el producto al cliente","El equipo habla brevemente sobre progreso, obstáculos y planes"]},
     {q:"¿Cuál es la responsabilidad principal del Product Owner en Scrum?",a:3,opts:["Facilitar reuniones diarias","Ejecutar todas las pruebas","Escribir todo el código","Gestionar el Product Backlog y priorizar funcionalidades"]},
     {q:"¿Qué hace git clone?",a:1,opts:["Descarga solo los cambios recientes","Crea copia completa del repositorio con todo el historial","Crea una nueva rama local","Elimina el repositorio remoto"]},
@@ -484,7 +484,7 @@ var QDB = {
     {q:"¿Cuál es la principal ventaja del patrón Singleton?",a:0,opts:["Garantiza que solo exista una única instancia de clase en toda la aplicación","Facilita herencia múltiple","Elimina constructores","Permite múltiples instancias eficientes"]}
   ],
 
-  emp [
+  emp: [
     {q:"¿Qué es una prueba psicométrica?",a:1,opts:["Una prueba física","Una prueba que mide inteligencia, personalidad o capacidad emocional","Una entrevista telefónica","Un examen técnico del puesto"]},
     {q:"¿Cuál es el descanso semanal mínimo legal?",a:2,opts:["Un día natural","Depende del empresario","Un día y medio ininterrumpido","Dos días completos"]},
     {q:"¿Qué es una autocandidatura?",a:3,opts:["Enviar CV a ofertas activas","Registrarse en portales sin interactuar","Presentar CV sin documento adjunto","Enviar CV a empresas sin vacantes abiertas"]},
@@ -622,7 +622,7 @@ var QDB = {
     {q:"¿Cuál es la vía de entrada más frecuente de contaminantes químicos?",a:2,opts:["Digestiva","Parenteral","Respiratoria","Dérmica"]}
   ],
 
-  si [
+  si: [
     {q:"¿Qué nivel RAID proporciona máxima velocidad sin redundancia?",a:2,opts:["RAID 5","RAID 1","RAID 0","RAID 10"]},
     {q:"¿Qué representan los permisos octal 755 en Linux?",a:3,opts:["Solo lectura para todos","Escritura y ejecución para propietario; sin permisos para otros","Lectura y escritura para propietario; lectura para grupo","Completos para propietario; lectura y ejecución para grupo y otros"]},
     {q:"¿Mejor sistema de ficheros para intercambio Windows-Linux?",a:1,opts:["ext4","NTFS","Btrfs","FAT32"]},
