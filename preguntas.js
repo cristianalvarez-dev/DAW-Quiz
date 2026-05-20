@@ -1,8 +1,4 @@
-// DAW Quiz — Banco de preguntas completo
-// Formato de cada pregunta: { q: "texto", a: índice_correcto (0-3), opts: ["A","B","C","D"] }
-// Para añadir preguntas: agrega objetos al array de la asignatura correspondiente.
-
-var QDB = {
+{
 
   lm: [
     {q:"¿Qué propiedad define el color de fondo?",a:2,opts:["bg","background-text","background-color","color-background"]},
@@ -959,4 +955,4 @@ var QDB = {
     {q:"¿Qué significa montar un sistema de archivos?",a:1,opts:["Eliminarlo del sistema","Vincularlo al árbol de directorios para poder acceder a él","Crearlo desde cero","Formatearlo"]}
   ]
 
-};
+}
