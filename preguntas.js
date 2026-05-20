@@ -1,6 +1,6 @@
 {
 
-  lm: [
+  lm [
     { q: "¿Qué propiedad define el color de fondo?", a: 2, opts: ["bg", "background-text", "background-color", "color-background"] },
     { q: "¿Cuál es la forma correcta de CSS interno?", a: 0, opts: ["<style> h1{color:red;} </style>", "<design> h1{color:red;} </design>", "<script> h1{color:red;} </script>", "<css> h1{color:red;} </css>"] },
     { q: "¿Qué hace la propiedad background-color?", a: 0, opts: ["Cambia el color del fondo de un elemento", "Oculta el contenido del elemento", "Ajusta el tamaño del borde", "Modifica el color del texto"] },
